@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Progress Tracker TKA 20 Hari</title>
+<style>
+:root{--bg:#0f1420;--card:#171d2b;--tx:#e8ecf4;--mu:#8b93a7;--bd:#262e42;--ac:#5b8def;--ok:#4ade80;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+
+
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:16px}
+h1{font-size:1.3rem;margin:4px 0}
+.sub{color:var(--mu);font-size:.85rem;margin-bottom:12px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}.stat{background:var(--bg);border:1px solid var(--bd);border-radius:12px;padding:12px;text-align:center}.stat .num{font-size:1.5rem;font-weight:700;color:var(--ac)}.stat .lbl{font-size:.75rem;color:var(--mu)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:14px}
+.bar{height:10px;background:var(--bd);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--ac),var(--ok));width:0;transition:width .3s}
+.big{font-size:2rem;font-weight:700;color:var(--ac)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.85rem;margin:8px 0 4px}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.grid button{padding:10px 0;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;font:inherit;cursor:pointer}
+.grid button.part{border-color:var(--ac)}
+.grid button.full{background:var(--ok);color:#0f1420;border-color:var(--ok);font-weight:700}
+.grid button.sel{outline:2px solid var(--ac);outline-offset:1px;font-weight:700}
+.task{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--bd)}
+.task:first-of-type{border-top:0}
+.task input{width:20px;height:20px;margin-top:2px;accent-color:var(--ok);flex:none}
+.task small{display:block;color:var(--mu);font-size:.75rem;text-transform:uppercase;letter-spacing:.04em}
+.task.d span.t{text-decoration:line-through;color:var(--mu)}
+textarea{width:100%;min-height:64px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);padding:8px;font:inherit;resize:vertical}
+.nav{display:flex;gap:8px;margin-top:10px}
+.nav button,.rst{flex:1;padding:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;font:inherit;cursor:pointer}
+.rst{flex:none;color:var(--mu);font-size:.8rem;margin-top:4px}
+</style>
+</head>
+<body>
+<main>
+<h1>🎯 Progress Tracker TKA — 20 Hari</h1>
+<div class="sub">Mat. Wajib • Mat. Tingkat Lanjut • B. Indonesia • B. Inggris • Fisika (berdasarkan kisi-kisi resmi TKA-SMA 2026)</div>
+
+<div class="card">
+  <div class="stats"><div class="stat"><div class="num" id="sd">0</div><div class="lbl">Hari Selesai</div></div><div class="stat"><div class="num" id="ss">0</div><div class="lbl">Streak Saat Ini</div></div><div class="stat"><div class="num" id="sx">0</div><div class="lbl">Tugas Selesai</div></div></div><div class="row"><span>Progres keseluruhan</span><span id="cnt"></span></div>
+  <div class="big" id="pct">0%</div>
+  <div class="bar"><i id="allbar"></i></div>
+  <div id="subj"></div>
+</div>
+
+<div class="card">
+  <div class="row"><b>Pilih hari</b><span style="color:var(--mu)">hijau = selesai semua</span></div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<div class="card" id="day"></div>
+<button class="rst" id="rst">Reset semua progres</button>
+</main>
+
+<script>
+var S=[["mw","Mat. Wajib"],["ml","Mat. Lanjut"],["bi","B. Indonesia"],["en","B. Inggris"],["fi","Fisika"]];
+var D={
+mw:["Bilangan real: jenis, sifat & operasi","SPL multivariabel (maks. 3 variabel)","Sistem pertidaksamaan linear & program linear","Fungsi: domain, kodomain, range (linear, kuadrat, rasional)","Fungsi invers & fungsi komposisi","Barisan & deret aritmetika","Barisan & deret geometri; bunga tunggal/majemuk, pertumbuhan & peluruhan","Hubungan sudut, garis, bidang & Teorema Pythagoras","Kesebangunan/kekongruenan; keliling & luas bangun datar","REVIEW 1: latihan soal hari 1–9","Volume & luas permukaan bangun ruang","Jarak dua titik, garis, bidang, titik-garis, titik-bidang","Transformasi geometri titik (translasi, refleksi, rotasi, dilatasi)","Perbandingan trigonometri (sin, cos, tan, cot, sec, cosec)","Penyajian data: diagram, tabel, grafik","Ukuran pemusatan & penyebaran (data tunggal & kelompok)","Aturan pencacahan & peluang","Latihan campuran: aljabar & fungsi","Latihan campuran: geometri, trigonometri, data","TRY OUT & evaluasi Mat. Wajib"],
+ml:["Matriks: operasi & determinan (2×2, 3×3)","Invers matriks","Polinomial: operasi & pemfaktoran","Suku sisa & teorema faktor","Fungsi polinom & rasional: domain, range, grafik","Fungsi akar & fungsi mutlak","Fungsi eksponensial & logaritma","Fungsi trigonometri & grafiknya","Vektor pada bidang & ruang","REVIEW 1: latihan soal hari 1–9","Panjang vektor & operasi vektor","Persamaan lingkaran","Garis singgung lingkaran","Luas & keliling daerah/bagian lingkaran","Transformasi geometri & matriks transformasi","Komposisi transformasi","Limit fungsi aljabar (tanpa L'Hopital)","Limit fungsi trigonometri","Latihan campuran semua topik","TRY OUT & evaluasi Mat. Lanjut"],
+bi:["Mengidentifikasi kata serapan (daerah/asing)","Latar, karakter & fenomena dari kosakata (fiksi/nonfiksi)","Menyusun kerangka teks dari bagian penting","Ide pokok & gagasan pendukung","Tokoh, peristiwa, latar, konflik & nilai dalam teks","Hubungan makna antarkalimat","Hubungan makna antarparagraf","Memprediksi lanjutan/akhir uraian atau cerita","Menilai relevansi peristiwa dengan kehidupan sehari-hari","REVIEW 1: latihan soal hari 1–9","Menilai keakuratan, kecukupan & ketepatan informasi","Menilai ketepatan & kesesuaian penggunaan bahasa","Menilai ketepatan bagian teks untuk menggambarkan karakter/latar","Respons emosional terhadap puisi, prosa & drama","Latihan teks nonfiksi","Latihan teks fiksi","Latihan soal inferensial","Latihan soal evaluasi & apresiasi","Latihan campuran","TRY OUT & evaluasi B. Indonesia"],
+en:["Finding/identifying explicit information","Classifying & outlining","Summarizing","Synthesizing information from other sources","Inferring supporting details","Inferring topic, main idea, purpose & moral message","Inferring comparisons (similarities/differences)","Inferring cause & effect","Inferring character traits","REVIEW 1: practice sets day 1–9","Predicting outcomes & sequence of events","Judging reality vs fantasy","Judging fact vs opinion","Judging sufficiency & validity of information","Judging appropriateness (best part describing a character)","Responding to the text (feelings & opinions)","Reading practice: narrative texts","Reading practice: expository & argumentative texts","Mixed practice","TRY OUT & evaluation B. Inggris"],
+fi:["Pengukuran: alat ukur (jangka sorong, mikrometer, neraca) & angka penting","Gerak lurus: jarak, perpindahan, kecepatan","GLB & GLBB","Gerak parabola (referensi bidang horizontal)","Gerak melingkar beraturan","Hukum Newton 1, 2, 3","Jenis-jenis gaya (berat, normal, gesek, tegangan) dengan besar & arah","Momentum & impuls","Hukum kekekalan momentum","REVIEW 1: latihan soal hari 1–9","Momen gaya","Momen inersia & Hukum Newton tentang rotasi","Tekanan fluida & Hukum Pascal","Hukum Archimedes","Fluida dinamis: kontinuitas","Hukum Bernoulli","Bunyi: karakteristik gelombang mekanik","Sumber & intensitas bunyi","Latihan campuran: kinematika & dinamika","TRY OUT & evaluasi Fisika"]
+};
+var st={done:{},notes:{},cur:1};
+try{var r=localStorage.getItem("tka20");if(r)st=JSON.parse(r)}catch(e){}
+function save(){try{localStorage.setItem("tka20",JSON.stringify(st))}catch(e){}}
+function $(i){return document.getElementById(i)}
+function dayCount(d){var n=0;S.forEach(function(s){if(st.done[s[0]+d])n++});return n}
+function render(){
+  var tot=0,subHtml="";
+  S.forEach(function(s){
+    var n=0;for(var d=1;d<=20;d++)if(st.done[s[0]+d])n++;
+    tot+=n;
+    subHtml+='<div class="row"><span>'+s[1]+'</span><span>'+n+'/20</span></div><div class="bar"><i style="width:'+n*5+'%"></i></div>';
+  });
+  $("subj").innerHTML=subHtml;
+  $("cnt").textContent=tot+" / 100 tugas";
+  $("pct").textContent=Math.round(tot/100*100)+"%";
+  $("allbar").style.width=tot/100*100+"%";
+  var fd=0,sk=0,q;while(sk<20&&dayCount(sk+1)==5)sk++;for(q=1;q<=20;q++)if(dayCount(q)==5)fd++;
+  $("sd").textContent=fd;$("ss").textContent=sk;$("sx").textContent=tot;
+  var g="";
+  for(var d=1;d<=20;d++){var c=dayCount(d);g+='<button data-d="'+d+'" class="'+(c==5?"full ":c>0?"part ":"")+(d==st.cur?"sel":"")+'">'+d+'</button>'}
+  $("grid").innerHTML=g;
+  var h='<div class="row"><b style="font-size:1.1rem">Hari '+st.cur+'</b><span>'+dayCount(st.cur)+'/5 selesai</span></div>';
+  S.forEach(function(s){
+    var k=s[0]+st.cur,on=st.done[k];
+    h+='<label class="task'+(on?" d":"")+'"><input type="checkbox" data-k="'+k+'"'+(on?" checked":"")+'><div><small>'+s[1]+'</small><span class="t">'+D[s[0]][st.cur-1]+'</span></div></label>';
+  });
+  h+='<div style="margin-top:10px"><small style="color:var(--mu)">Catatan hari ini (skor latihan, materi yang masih lemah)</small><textarea id="note">'+(st.notes[st.cur]||"").replace(/</g,"&lt;")+'</textarea></div>';
+  h+='<div class="nav"><button id="prev">← Sebelumnya</button><button id="next">Berikutnya →</button></div>';
+  $("day").innerHTML=h;
+  $("note").oninput=function(){st.notes[st.cur]=this.value;save()};
+  $("prev").onclick=function(){if(st.cur>1){st.cur--;save();render()}};
+  $("next").onclick=function(){if(st.cur<20){st.cur++;save();render()}};
+}
+document.addEventListener("click",function(e){
+  var t=e.target;
+  if(t.dataset&&t.dataset.d){st.cur=+t.dataset.d;save();render();window.scrollTo(0,0)}
+});
+document.addEventListener("change",function(e){
+  var k=e.target.dataset&&e.target.dataset.k;
+  if(k){st.done[k]=e.target.checked;save();render()}
+});
+$("rst").onclick=function(){if(confirm("Hapus semua progres?")){st={done:{},notes:{},cur:1};save();render()}};
+render();
+</script>
+</body>
+</html>
